@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 export default function MovieList() {
   return (
@@ -6,10 +7,12 @@ export default function MovieList() {
       <div className="pt-20 pb-10 flex flex-row justify-between items-center">
         <div className="flex flex-row gap-2 items-center">
           <div className="text-5xl font-medium text-white">My movies</div>
-          <img
-            src="./icons/add_circle_outline.svg"
-            className="w-[24px] h-[24px] mt-3"
-          />
+          <Link to="/create">
+            <img
+              src="./icons/add_circle_outline.svg"
+              className="w-[24px] h-[24px] mt-3"
+            />
+          </Link>
         </div>
         <div className="flex flex-row gap-2 items-center">
           <div className="text-xl font-medium text-white">Logout</div>

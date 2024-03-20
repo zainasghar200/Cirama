@@ -12,7 +12,7 @@ function App() {
       {/* Wrap your routes with Routes component */}
       <Routes>
         {/* Specify each route using Route component */}
-        <Route path="/sign-in" element={<SignIn />} />
+        <Route path="/" element={<SignIn />} />
         <Route path="/empty-state" element={<EmptyState />} />
         <Route path="/movie-list" element={<MovieList />} />
         <Route path="/create" element={<Create />} />
