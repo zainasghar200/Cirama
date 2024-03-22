@@ -4,6 +4,8 @@ import MoviePosterComponent from "../../../component/movie-poster/MoviePoster";
 export default function MovieDetail({ MovieObject, onCancel, onSubmit }) {
   const [rating, setRating] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [reviews, setReviews] = useState();
+  const [submissions, setSubmissions] = useState([]);
 
   const renderStars = () => {
     const stars = [];
@@ -88,11 +90,15 @@ export default function MovieDetail({ MovieObject, onCancel, onSubmit }) {
   };
 
   const handleSubmit = () => {
-    const submission = {
+    const value = {
       rating: rating,
       isFavorite: isFavorite,
+      reviews: reviews,
     };
-    onSubmit(submission);
+    setSubmissions([...submissions, value]);
+    setRating(0);
+    setReviews("");
+    setIsFavorite(false);
   };
 
   return (
@@ -138,10 +144,50 @@ export default function MovieDetail({ MovieObject, onCancel, onSubmit }) {
                       ))}
                   </div>
                 </div>
+                <div className="text-lg font-medium">Reviews:</div>
+                <div className="bg-[#1E454A] p-[2px] rounded-md overflow-auto h-[160px]">
+                  {submissions.map((submission, index) => (
+                    <div
+                      key={index}
+                      className={`border-b border-[#092C39] ${
+                        index === 0 ? "rounded-t-md" : ""
+                      } ${
+                        index === submissions.length - 1 ? "rounded-b-md" : ""
+                      } hover:bg-[#092C39] p-1`}
+                    >
+                      <div className="flex flex-row justify-between items-center">
+                        <div className="font-bold text-xs">UserName:</div>
+                        <div>
+                          <Star
+                            iconsSize="text-xs"
+                            rating={submission.rating}
+                          />
+                          <span>({submission.rating})</span>
+                        </div>
+                      </div>
+                      <div className="w-full rounded-md text-xs">
+                        {submission.reviews}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
               <div className="flex flex-row justify-between items-center">
-                <div>{renderStars()}</div>
+                <div>
+                  <div className="text-white font-medium">Rate Movie: </div>{" "}
+                  <div>{renderStars()}</div>
+                </div>
                 <div>{renderHeart()}</div>
+              </div>
+              <div>
+                <input
+                  className="w-full bg-[#224957] p-2 rounded-md text-sm md:text-base"
+                  placeholder="Add Your Review"
+                  value={reviews}
+                  onChange={(e) => {
+                    setReviews(e.target.value);
+                  }}
+                />
               </div>
               <div className="flex flex-col mt-5 lg:mt-10 md:flex-row gap-2">
                 <button
