@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Dropdown from "../../component/dropdown/Dropdown";
-import Footer from "../../component/footer/Footer";
 import MovieCard from "../../component/movie-card/MovieCard";
+import MovieDetail from "./movie-detail/MovieDetail";
 
 export default function MovieList() {
   const [movies, setMovies] = useState([]);
@@ -11,6 +11,8 @@ export default function MovieList() {
   const [searchGenreQuery, setSearchGenreQuery] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedSortingCriteria, setSelectedSortingCriteria] = useState("");
+  const [selectedMovie, setSelectedMovie] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     getMovieList();
@@ -19,6 +21,10 @@ export default function MovieList() {
   const getMovieList = async () => {
     try {
       const response = await fetch(`https://jsonfakery.com/movies/paginated`);
+      if (!response.ok) {
+        navigate("/empty-state");
+        return;
+      }
       const movieData = await response.json();
       setMovies(movieData.data);
     } catch (error) {
@@ -62,7 +68,9 @@ export default function MovieList() {
         break;
       case "Sort by Release Date":
         sortedMovies.sort(
-          (a, b) => new Date(a.release_date) - new Date(b.release_date)
+          (a, b) =>
+            new Date(a.release_date).getTime() -
+            new Date(b.release_date).getTime()
         );
         break;
       default:
@@ -73,100 +81,115 @@ export default function MovieList() {
 
   const sortedMovies = sortMovies();
 
+  const handleMovieClick = (movie) => {
+    setSelectedMovie(movie);
+  };
+
   return (
-    <div className="w-full min-h-[100vh] bg-[#163545]">
-      <div className="w-full min-h-[100vh] bg-[#163545] px-20">
-        <div className="pt-20 pb-10 flex flex-row gap-2 justify-between items-center">
-          <div className="flex flex-row gap-2 items-center flex-grow">
-            <div className="text-5xl font-medium text-white">My movies</div>
-            <Link to="/create">
-              <img
-                src="./icons/add_circle_outline.svg"
-                className="w-[24px] h-[24px] mt-3"
-                alt="Add movie"
-              />
-            </Link>
-          </div>
-          <div className="flex flex-row gap-2 items-center">
-            <div className="text-xl font-medium text-white">Logout</div>
-            <img
-              src="./icons/logout.svg"
-              className="w-[24px] h-[24px]"
-              alt="Logout"
-            />
-          </div>
-        </div>
-
-        <div className="flex flex-wrap gap-4">
-          <div className="flex-grow-0 flex-shrink-0 w-1/4">
-            <input
-              className="w-full bg-[#224957] text-gray-200 p-2 rounded-md text-sm md:text-base focus:outline-none"
-              placeholder="Search by Movie Name, Release Date and Rating etc"
-              value={searchNameQuery}
-              onChange={(event) => setSearchNameQuery(event.target.value)}
-              disabled={!movies}
-            />
-          </div>
-          <div className="flex-grow-0 flex-shrink-0 w-1/4">
-            <input
-              type="date"
-              className="w-full bg-[#224957] text-gray-200 p-2 rounded-md text-sm md:text-base focus:outline-none cursor-pointer"
-              placeholder="Select Release Date"
-              value={selectedDate}
-              onChange={handleDateChange}
-              disabled={!movies}
-            />
-          </div>
-          <div className="flex-grow-0 flex-shrink-0 w-1/4">
-            <Dropdown
-              dropdownName="Select Rating"
-              items={[
-                "Show me movies with ratings less 5.0.",
-                "Show me movies with ratings above 5.0.",
-                "Filter highly-rated movies with ratings above 7.5.",
-              ]}
-              onSelect={handleSelect}
-            />
-          </div>
-          <div className="flex-grow-0 flex-shrink-0 w-1/4">
-            <Dropdown
-              dropdownName="Select Genre"
-              items={[]}
-              onSelect={handleSelect}
-            />
-          </div>
-          <div className="flex-grow-0 flex-shrink-0 w-1/4">
-            <Dropdown
-              dropdownName="Select Sorting"
-              items={["Sort by Name", "Sort by Rating", "Sort by ReleaseDate"]}
-              onSelect={handleSelect}
-            />
-          </div>
-        </div>
-
-        <div className="py-10 flex flex-wrap gap-4 justify-center">
-          {sortedMovies &&
-            sortedMovies.map((movie, index) =>
-              filterByReleaseDate(movie) &&
-              movie.original_title
-                .toLowerCase()
-                .includes(searchNameQuery.toLowerCase()) &&
-              movie.vote_average.toString().includes(searchRatingQuery) ? (
-                <MovieCard
-                  key={index}
-                  index={index}
-                  PosterImage={movie.poster_path}
-                  MovieName={movie.original_title}
-                  ReleaseDate={movie.release_date}
-                  MovieRating={movie.vote_average}
+    <>
+      {!selectedMovie && (
+        <div className="px-20">
+          <div className="pt-20 pb-10 flex flex-row gap-2 justify-between items-center">
+            <div className="flex flex-row gap-2 items-center flex-grow">
+              <div className="text-5xl font-medium text-white">My movies</div>
+              <Link to="/create">
+                <img
+                  src="./icons/add_circle_outline.svg"
+                  className="w-[24px] h-[24px] mt-3"
+                  alt="Add movie"
                 />
-              ) : null
-            )}
+              </Link>
+            </div>
+            <div className="flex flex-row gap-2 items-center">
+              <div className="text-xl font-medium text-white">Logout</div>
+              <img
+                src="./icons/logout.svg"
+                className="w-[24px] h-[24px]"
+                alt="Logout"
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-4">
+            <div className="flex-grow-0 flex-shrink-0 w-1/4">
+              <input
+                className="w-full bg-[#224957] text-gray-200 p-2 rounded-md text-sm md:text-base focus:outline-none"
+                placeholder="Search by Movie Name, Release Date and Rating etc"
+                value={searchNameQuery}
+                onChange={(event) => setSearchNameQuery(event.target.value)}
+                disabled={!movies}
+              />
+            </div>
+            <div className="flex-grow-0 flex-shrink-0 w-1/4">
+              <input
+                type="date"
+                className="w-full bg-[#224957] text-gray-200 p-2 rounded-md text-sm md:text-base focus:outline-none cursor-pointer"
+                placeholder="Select Release Date"
+                value={selectedDate}
+                onChange={handleDateChange}
+                disabled={!movies}
+              />
+            </div>
+            <div className="flex-grow-0 flex-shrink-0 w-1/4">
+              <Dropdown
+                dropdownName="Select Rating"
+                items={[
+                  "Show me movies with ratings less 5.0.",
+                  "Show me movies with ratings above 5.0.",
+                  "Filter highly-rated movies with ratings above 7.5.",
+                ]}
+                onSelect={handleSelect}
+              />
+            </div>
+            <div className="flex-grow-0 flex-shrink-0 w-1/4">
+              <Dropdown
+                dropdownName="Select Genre"
+                items={[]}
+                onSelect={handleSelect}
+              />
+            </div>
+            <div className="flex-grow-0 flex-shrink-0 w-1/4">
+              <Dropdown
+                dropdownName="Select Sorting"
+                items={[
+                  "Sort by Name",
+                  "Sort by Rating",
+                  "Sort by ReleaseDate",
+                ]}
+                onSelect={handleSelect}
+              />
+            </div>
+          </div>
+
+          <div className="py-10 flex flex-wrap gap-4 justify-center">
+            {sortedMovies &&
+              sortedMovies.map((movie, index) =>
+                filterByReleaseDate(movie) &&
+                movie.original_title
+                  .toLowerCase()
+                  .includes(searchNameQuery.toLowerCase()) &&
+                movie.vote_average.toString().includes(searchRatingQuery) ? (
+                  <div
+                    key={index}
+                    className="cursor-pointer"
+                    onClick={() => handleMovieClick(movie)}
+                  >
+                    <MovieCard
+                      key={index}
+                      index={index}
+                      PosterImage={movie.poster_path}
+                      MovieName={movie.original_title}
+                      ReleaseDate={movie.release_date}
+                      MovieRating={movie.vote_average}
+                    />
+                  </div>
+                ) : null
+              )}
+          </div>
         </div>
-      </div>
-      <div className="flex justify-end">
-        <Footer />
-      </div>
-    </div>
+      )}
+
+      {selectedMovie && <MovieDetail MovieObject={selectedMovie} />}
+    </>
   );
 }

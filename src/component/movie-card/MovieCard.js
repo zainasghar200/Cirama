@@ -7,43 +7,65 @@ export default function MovieCard({
   ReleaseDate,
   MovieRating,
 }) {
+  // const renderStars = (rating) => {
+  //   const stars = [];
+  //   for (let i = 1; i <= 10; i++) {
+  //     if (i <= rating) {
+  //       stars.push(
+  //         <label
+  //           key={i}
+  //           htmlFor={`star${i}`}
+  //           className="text-xl text-[#FFD700] cursor-pointer"
+  //         >
+  //           &#9733;
+  //         </label>
+  //       );
+  //     } else {
+  //       stars.push(
+  //         <label
+  //           key={i}
+  //           htmlFor={`star${i}`}
+  //           className="text-xl text-[#224957] cursor-pointer"
+  //         >
+  //           &#9733;
+  //         </label>
+  //       );
+  //     }
+  //     stars.push(
+  //       <input
+  //         key={`input${i}`}
+  //         type="radio"
+  //         id={`star${i}`}
+  //         name={`rating-${index}`}
+  //         value={i}
+  //         className="hidden"
+  //         checked={i === Math.round(rating)}
+  //       />
+  //     );
+  //   }
+  //   return stars;
+  // };
+
   const renderStars = (rating) => {
-    const stars = [];
-    for (let i = 1; i <= 10; i++) {
-      if (i <= rating) {
-        stars.push(
-          <label
-            key={i}
-            htmlFor={`star${i}`}
-            className="text-xl text-[#FFD700] cursor-pointer"
-          >
-            &#9733;
-          </label>
-        );
-      } else {
-        stars.push(
-          <label
-            key={i}
-            htmlFor={`star${i}`}
-            className="text-xl text-[#224957] cursor-pointer"
-          >
-            &#9733;
-          </label>
-        );
-      }
-      stars.push(
-        <input
-          key={`input${i}`}
-          type="radio"
-          id={`star${i}`}
-          name={`rating-${index}`}
-          value={i}
-          className="hidden"
-          checked={i === Math.round(rating)}
-        />
+    if (rating <= 0) {
+      return (
+        <label
+          htmlFor={`star${index}`}
+          className="text-xl text-[#224957] cursor-pointer"
+        >
+          &#9733;
+        </label>
       );
     }
-    return stars;
+
+    return (
+      <label
+        htmlFor={`star${index}`}
+        className="text-xl text-[#FFD700] cursor-pointer"
+      >
+        &#9733;
+      </label>
+    );
   };
 
   return (
