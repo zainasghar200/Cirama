@@ -12,6 +12,7 @@ export default function MovieList() {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedSortingCriteria, setSelectedSortingCriteria] = useState("");
   const [selectedMovie, setSelectedMovie] = useState(null);
+  const [genres, setGenres] = useState(["horror", "comedy", "sci-fi"]); // Define genres
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,17 +27,28 @@ export default function MovieList() {
         return;
       }
       const movieData = await response.json();
-      setMovies(movieData.data);
+      // Add genre to each movie object
+      const moviesWithGenres = movieData.data.map((movie) => {
+        // Randomly select a genre from the predefined list
+        const randomIndex = Math.floor(Math.random() * genres.length);
+        const randomGenre = genres[randomIndex];
+        return { ...movie, genre: randomGenre };
+      });
+      setMovies(moviesWithGenres);
     } catch (error) {
       console.log(error);
     }
   };
 
-  function handleSelect(item) {
-    if (item.startsWith("Sort by")) {
-      setSelectedSortingCriteria(item);
-    } else {
+  function handleSelect(item, type) {
+    if (type === "Sorting") {
+      if (item.startsWith("Sort by")) {
+        setSelectedSortingCriteria(item);
+      }
+    } else if (type === "Rating") {
       setSearchRatingQuery(item);
+    } else if (type === "Genre") {
+      setSearchGenreQuery(item);
     }
   }
 
@@ -101,35 +113,23 @@ export default function MovieList() {
           <div className="pt-20 pb-10 flex flex-row gap-2 justify-between items-center">
             <div className="flex flex-row gap-2 items-center flex-grow">
               <div className="text-5xl font-medium text-white">My movies</div>
-              {/*<Link to="/create">
-                  <img
-                    src="./icons/add_circle_outline.svg"
-                    className="w-[24px] h-[24px] mt-3"
-                    alt="Add movie"
-                  />
-                </Link>*/}
             </div>
             <div className="flex flex-row gap-2 items-center">
               <div className="text-xl font-medium text-white">Logout</div>
-              <img
-                src="./icons/logout.svg"
-                className="w-[24px] h-[24px]"
-                alt="Logout"
-              />
             </div>
           </div>
 
           <div className="flex flex-wrap gap-4">
-            <div className="flex-grow-0 flex-shrink-0 w-1/4">
+            <div className="w-full sm:w-1/2 md:w-1/4">
               <input
                 className="w-full bg-[#224957] text-gray-200 p-2 rounded-md text-sm md:text-base focus:outline-none"
-                placeholder="Search by Movie Name, Release Date and Rating etc"
+                placeholder="Search by Movie Name"
                 value={searchNameQuery}
                 onChange={(event) => setSearchNameQuery(event.target.value)}
                 disabled={!movies}
               />
             </div>
-            <div className="flex-grow-0 flex-shrink-0 w-1/4">
+            <div className="w-full sm:w-1/2 md:w-1/4">
               <input
                 type="date"
                 className="w-full bg-[#224957] text-gray-200 p-2 rounded-md text-sm md:text-base focus:outline-none cursor-pointer"
@@ -139,33 +139,33 @@ export default function MovieList() {
                 disabled={!movies}
               />
             </div>
-            <div className="flex-grow-0 flex-shrink-0 w-1/4">
+            <div className="w-full sm:w-1/2 md:w-1/4">
               <Dropdown
                 dropdownName="Select Rating"
                 items={[
-                  "Show me movies with ratings less 5.0.",
-                  "Show me movies with ratings above 5.0.",
-                  "Filter highly-rated movies with ratings above 7.5.",
+                  "Ratings less 5.0.",
+                  "Ratings above 5.0.",
+                  "Highly-Rated above 7.5.",
                 ]}
-                onSelect={handleSelect}
+                onSelect={(item) => handleSelect(item, "Rating")}
               />
             </div>
-            <div className="flex-grow-0 flex-shrink-0 w-1/4">
+            <div className="w-full sm:w-1/2 md:w-1/4">
               <Dropdown
                 dropdownName="Select Genre"
-                items={[]}
-                onSelect={handleSelect}
+                items={genres} // Populate dropdown with genres
+                onSelect={(item) => handleSelect(item, "Genre")}
               />
             </div>
-            <div className="flex-grow-0 flex-shrink-0 w-1/4">
+            <div className="w-full sm:w-1/2 md:w-1/4">
               <Dropdown
                 dropdownName="Select Sorting"
                 items={[
                   "Sort by Name",
                   "Sort by Rating",
-                  "Sort by ReleaseDate",
+                  "Sort by Release Date",
                 ]}
-                onSelect={handleSelect}
+                onSelect={(item) => handleSelect(item, "Sorting")}
               />
             </div>
           </div>
@@ -177,7 +177,16 @@ export default function MovieList() {
                 movie.original_title
                   .toLowerCase()
                   .includes(searchNameQuery.toLowerCase()) &&
-                movie.vote_average.toString().includes(searchRatingQuery) ? (
+                (searchRatingQuery === "" ||
+                  (searchRatingQuery === "Ratings less 5.0." &&
+                    movie.vote_average < 5.0) ||
+                  (searchRatingQuery === "Ratings above 5.0." &&
+                    movie.vote_average > 5.0) ||
+                  (searchRatingQuery ===
+                    "Filter highly-rated movies with ratings above 7.5." &&
+                    movie.vote_average > 7.5)) &&
+                (searchGenreQuery === "" ||
+                  movie.genre === searchGenreQuery) ? (
                   <div
                     key={index}
                     className="cursor-pointer"

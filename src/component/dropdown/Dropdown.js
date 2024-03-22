@@ -27,11 +27,9 @@ function Dropdown({ dropdownName, items, onSelect }) {
     <div className="relative group">
       <button
         onClick={toggleDropdown}
-        className="inline-flex justify-between w-full px-4 p-2 text-sm font-medium text-gray-200 bg-[#224957] border-[#163545] rounded-md shadow-sm focus:outline-none"
+        className="inline-flex justify-between w-full h-full px-4 p-2 text-sm md:text-base font-medium text-gray-200 bg-[#224957] border-[#163545] rounded-md shadow-sm focus:outline-none"
       >
-        <span className="mr-2">
-          {selectedItem ? selectedItem : dropdownName}
-        </span>
+        {selectedItem ? selectedItem : dropdownName}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="w-5 h-5 ml-2 -mr-1"
@@ -57,14 +55,14 @@ function Dropdown({ dropdownName, items, onSelect }) {
           placeholder="Search..."
           value={searchTerm}
           onChange={handleInputChange}
-          className="block w-full px-4 py-2 text-gray-200 border rounded-md  border-[#092C39] focus:outline-none bg-[#163545]"
+          className="block w-full px-4 p-2 text-gray-200 border rounded-md  border-[#092C39] focus:outline-none bg-[#163545]"
           type="text"
           autoComplete="off"
         />
         {filteredItems.map((item, index) => (
           <div
             key={index}
-            className={`block px-4 py-2 text-gray-200 hover:bg-[#092C39] cursor-pointer rounded-md ${
+            className={`block px-4 p-2 text-gray-200 hover:bg-[#092C39] cursor-pointer rounded-md ${
               item === selectedItem ? "bg-[#163545]" : ""
             }`}
             onClick={() => handleItemClick(item)}

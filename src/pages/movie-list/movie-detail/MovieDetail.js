@@ -34,6 +34,22 @@ export default function MovieDetail({ MovieObject, onCancel, onSubmit }) {
     return stars;
   };
 
+  const Star = ({ rating, iconsSize }) => {
+    if (rating <= 0) {
+      return (
+        <label className={`${iconsSize} text-[#224957] cursor-pointer`}>
+          &#9733;
+        </label>
+      );
+    }
+
+    return (
+      <label className={`${iconsSize} text-[#FFD700] cursor-pointer`}>
+        &#9733;
+      </label>
+    );
+  };
+
   const renderHeart = () => {
     if (isFavorite) {
       // Check if the movie is marked as favorite
@@ -93,20 +109,34 @@ export default function MovieDetail({ MovieObject, onCancel, onSubmit }) {
           <div className="w-full md:ml-10 md:w-1/2 lg:w-1/2">
             <div className="md:w-[312px] lg:w-[362px] flex flex-col justify-center item-center gap-4">
               <div className="w-full bg-[#224957] text-white p-2 rounded-md text-sm md:text-base">
-                <div>{MovieObject.overview}</div>
-                <div>{MovieObject.vote_average}</div>
-                <div>{MovieObject.release_date}</div>
+                <div className="text-lg font-medium">Overview:</div>
+                <div className="text-sm">{MovieObject.overview}</div>
 
-                <div>
-                  {MovieObject.casts
-                    .sort(
-                      (a, b) =>
-                        parseFloat(b.popularity) - parseFloat(a.popularity)
-                    )
-                    .slice(0, 5)
-                    .map((cast, index) => (
-                      <div key={index}>{cast.name}</div>
-                    ))}
+                <div className="flex flex-row items-center gap-2">
+                  <Star iconsSize="text-xl" rating={MovieObject.vote_average} />
+                  <div className="font-medium">
+                    ({MovieObject.vote_average})
+                  </div>
+                </div>
+                <div className="flex flex-row items-center gap-2">
+                  <div>Released On:</div>
+                  <div className="font-medium">{MovieObject.release_date}</div>
+                </div>
+                <div className="flex flex-row items-baseline gap-2">
+                  <div className="text-lg font-medium">Stars: </div>
+                  <div className="flex flex-wrap">
+                    {MovieObject.casts
+                      .sort(
+                        (a, b) =>
+                          parseFloat(b.popularity) - parseFloat(a.popularity)
+                      )
+                      .slice(0, 5)
+                      .map((cast, index) => (
+                        <div key={index} className="mr-5">
+                          {cast.name},
+                        </div>
+                      ))}
+                  </div>
                 </div>
               </div>
               <div className="flex flex-row justify-between items-center">
