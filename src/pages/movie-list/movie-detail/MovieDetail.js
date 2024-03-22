@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import MoviePosterComponent from "../../../component/movie-poster/MoviePoster";
 
-export default function MovieDetail({ MovieObject }) {
-  console.log("MovieObject: ", MovieObject);
-
+export default function MovieDetail({ MovieObject, onCancel, onSubmit }) {
   const [rating, setRating] = useState(0);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   const renderStars = () => {
     const stars = [];
@@ -35,11 +34,49 @@ export default function MovieDetail({ MovieObject }) {
     return stars;
   };
 
+  const renderHeart = () => {
+    if (isFavorite) {
+      // Check if the movie is marked as favorite
+      return (
+        <label
+          className="text-2xl text-red-500 cursor-pointer"
+          onClick={toggleFavorite}
+        >
+          &#9829;
+        </label>
+      );
+    } else {
+      return (
+        <label
+          className="text-2xl text-[#224957] cursor-pointer"
+          onClick={toggleFavorite}
+        >
+          &#9829;
+        </label>
+      );
+    }
+  };
+
+  const toggleFavorite = () => {
+    setIsFavorite(!isFavorite); // Toggle favorite status
+  };
+
   const handleRatingClick = (value) => {
     console.log("value: ", value);
     setRating(value);
-    // Here you can add the logic to send the rating value to the backend
-    // Example: sendRatingToBackend(value);
+  };
+
+  // Lift-Up
+  const handleCancel = () => {
+    onCancel();
+  };
+
+  const handleSubmit = () => {
+    const submission = {
+      rating: rating,
+      isFavorite: isFavorite,
+    };
+    onSubmit(submission);
   };
 
   return (
@@ -72,12 +109,21 @@ export default function MovieDetail({ MovieObject }) {
                     ))}
                 </div>
               </div>
-              <div className="flex items-center">{renderStars()}</div>
+              <div className="flex flex-row justify-between items-center">
+                <div>{renderStars()}</div>
+                <div>{renderHeart()}</div>
+              </div>
               <div className="flex flex-col mt-5 lg:mt-10 md:flex-row gap-2">
-                <button className="w-full md:w-1/2 bg-transparent border border-white p-2 rounded-md text-white text-center hover:bg-white hover:text-[#66D17F] transition duration-300">
+                <button
+                  className="w-full md:w-1/2 bg-transparent border border-white p-2 rounded-md text-white text-center hover:bg-white hover:text-[#66D17F] transition duration-300"
+                  onClick={handleCancel}
+                >
                   Cancel
                 </button>
-                <button className="w-full md:w-1/2 bg-[#66D17F] p-2 rounded-md text-white text-center hover:bg-white hover:text-[#66D17F] transition duration-300">
+                <button
+                  className="w-full md:w-1/2 bg-[#66D17F] p-2 rounded-md text-white text-center hover:bg-white hover:text-[#66D17F] transition duration-300"
+                  onClick={handleSubmit}
+                >
                   Submit
                 </button>
               </div>

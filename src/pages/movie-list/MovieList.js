@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Dropdown from "../../component/dropdown/Dropdown";
 import MovieCard from "../../component/movie-card/MovieCard";
 import MovieDetail from "./movie-detail/MovieDetail";
@@ -85,6 +85,15 @@ export default function MovieList() {
     setSelectedMovie(movie);
   };
 
+  const handleCancel = () => {
+    setSelectedMovie(false);
+  };
+
+  const handleSubmit = (submission) => {
+    setSelectedMovie(false);
+    console.log(submission);
+  };
+
   return (
     <>
       {!selectedMovie && (
@@ -92,13 +101,13 @@ export default function MovieList() {
           <div className="pt-20 pb-10 flex flex-row gap-2 justify-between items-center">
             <div className="flex flex-row gap-2 items-center flex-grow">
               <div className="text-5xl font-medium text-white">My movies</div>
-              <Link to="/create">
-                <img
-                  src="./icons/add_circle_outline.svg"
-                  className="w-[24px] h-[24px] mt-3"
-                  alt="Add movie"
-                />
-              </Link>
+              {/*<Link to="/create">
+                  <img
+                    src="./icons/add_circle_outline.svg"
+                    className="w-[24px] h-[24px] mt-3"
+                    alt="Add movie"
+                  />
+                </Link>*/}
             </div>
             <div className="flex flex-row gap-2 items-center">
               <div className="text-xl font-medium text-white">Logout</div>
@@ -189,7 +198,13 @@ export default function MovieList() {
         </div>
       )}
 
-      {selectedMovie && <MovieDetail MovieObject={selectedMovie} />}
+      {selectedMovie && (
+        <MovieDetail
+          MovieObject={selectedMovie}
+          onCancel={handleCancel}
+          onSubmit={handleSubmit}
+        />
+      )}
     </>
   );
 }
